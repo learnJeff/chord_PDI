@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PDI Chord Diagram</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="chord" style="width:100%;height:100vh;"></div>
+  <script>
+    fetch('pdi_chord_data.json')
+      .then(res => res.json())
+      .then(data => {
+        var matrix = data.matrix;
+        var labels = data.labels;
+        var colors = data.colors;
+
+        var source = [], target = [], value = [];
+        for (var i = 0; i < matrix.length; i++) {
+          for (var j = 0; j < matrix[i].length; j++) {
+            if (matrix[i][j] > 0) {
+              source.push(i);
+              target.push(j);
+              value.push(matrix[i][j]);
+            }
+          }
+        }
+
+        var chord = {
+          type: "sankey",
+          orientation: "h",
+          node: {
+            label: labels,
+            color: colors,
+            pad: 15,
+            thickness: 20
+          },
+          link: {
+            source: source,
+            target: target,
+            value: value
+          }
+        };
+
+        var layout = {
+          title: "PDI × PDI Correlation Chord Diagram (Sankey Style)",
+          font: { size: 12 },
+          height: window.innerHeight,
+          width: window.innerWidth
+        };
+
+        Plotly.newPlot('chord', [chord], layout);
+      });
+  </script>
+</body>
+</html>
